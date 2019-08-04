@@ -18,5 +18,7 @@ pub fn read(path: &str) -> Result<f64, std::io::Error> {
         .parse()
         .unwrap_or(0.0);
     
-    Ok(reading)
+    let temperature = reading / 1000.0;
+
+    Ok(temperature)
 }
