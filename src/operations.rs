@@ -4,8 +4,6 @@ use actix_web::{get, web, App, HttpServer, Responder, HttpResponse};
 use prometheus::{opts, labels, Registry, Gauge, Encoder, TextEncoder};
 use std::sync::Mutex;
 use std::io::Result;
-use bytes::Bytes;
-use futures::stream::once;
 
 mod thermometry;
 use thermometry::{Thermometry, GetTemperature};
