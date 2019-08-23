@@ -3,7 +3,7 @@ use std::env;
 
 mod operations;
 
-fn main() {
+fn main() -> std::io::Result<()> {
     let cli_args = clap::App::new(crate_name!())
         .version(crate_version!())
         .author(crate_authors!("\n"))
@@ -42,5 +42,5 @@ fn main() {
     }
 
     env_logger::init();
-    operations::start(cli_args);
+    operations::start(cli_args)
 }
