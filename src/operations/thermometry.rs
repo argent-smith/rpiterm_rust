@@ -1,22 +1,33 @@
-use std::io::Error;
+use std::time::Duration;
 use actix::prelude::*;
 
-type Temperature = f64;
+use super::app_state::{AppState, UpdateTemperatureGauge};
 
-pub struct Thermometry;
+pub type Temperature = f64;
+
+pub struct Thermometry {
+    app_state_addr: Addr<AppState>,
+}
+
+impl Thermometry {
+    fn update_curr_temperature(&mut self, _ctx: &mut Context<Self>) {
+        let pipeline = self.app_state_addr
+            .send(UpdateTemperatureGauge(36.6))
+            .map_err(|_| ());
+        Arbiter::spawn(pipeline);
+    }
+}
 
 impl Actor for Thermometry {
     type Context = Context<Self>;
+
+    fn started(&mut self, ctx: &mut Context<Self>) {
+        IntervalFunc::new(Duration::from_secs(10), Self::update_curr_temperature)
+            .finish()
+            .spawn(ctx);
+    }
 }
 
-#[derive(Message)]
-#[rtype(result="Result<Temperature, Error>")]
-pub struct GetTemperature;
-
-impl Handler<GetTemperature> for Thermometry {
-    type Result = Result<Temperature, Error>;
-
-    fn handle(&mut self, _msg: GetTemperature, _ctx: &mut Context<Self>) -> Self::Result {
-        Ok(36.6)
-    }
+pub fn start(addr: Addr<AppState>) {
+    Thermometry::start(Thermometry { app_state_addr: addr });
 }
