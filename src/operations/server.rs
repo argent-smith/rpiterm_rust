@@ -12,7 +12,7 @@ use log::info;
 
 use super::app_state::AppState;
 
-pub fn start(app_state: AppState) -> Result<()> {
+pub fn start(app_state: AppState, port: u16) -> Result<()> {
     info!("starting the http server");
     let app_data = web::Data::new(app_state);
     HttpServer::new(
@@ -23,7 +23,7 @@ pub fn start(app_state: AppState) -> Result<()> {
                 .service(metrics)
         }
     )
-    .bind("0.0.0.0:9090")?
+    .bind(("0.0.0.0", port))?
     .start();
     Ok(())
 }
