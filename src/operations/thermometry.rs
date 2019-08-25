@@ -9,11 +9,12 @@ pub type Temperature = f64;
 
 pub struct Thermometry {
     app_state_addr: Addr<AppState>,
+    t_file: String,
 }
 
 impl Thermometry {
     fn update_curr_temperature(&mut self, _ctx: &mut Context<Self>) {
-        let _ = thermometers::random()
+        let _ = thermometers::from_file(self.t_file.clone())
             .map(|temperature| {
                 trace!("sending temperature {} to app state", temperature);
                 let pipeline = self.app_state_addr
@@ -32,12 +33,13 @@ impl Actor for Thermometry {
 
     fn started(&mut self, ctx: &mut Context<Self>) {
         info!("staring thermometry routine");
+        self.update_curr_temperature(ctx);
         IntervalFunc::new(Duration::from_secs(10), Self::update_curr_temperature)
             .finish()
             .spawn(ctx);
     }
 }
 
-pub fn start(addr: Addr<AppState>) {
-    Thermometry::start(Thermometry { app_state_addr: addr });
+pub fn start(addr: Addr<AppState>, t_file: String) {
+    Thermometry::start(Thermometry { app_state_addr: addr, t_file: t_file });
 }

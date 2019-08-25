@@ -34,12 +34,12 @@ fn main() -> Result<()> {
     if cli_args.is_present("verbose") {
         env::set_var(
             "RUST_LOG",
-            format!("{}=trace", crate_name!())    
+            format!("{}=trace,actix_web=info", crate_name!())    
         );
     } else {
         env::set_var(
             "RUST_LOG",
-            format!("{}=info", crate_name!())    
+            format!("{}=info,actix_web=info", crate_name!())    
         );
     }
 

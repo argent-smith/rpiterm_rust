@@ -1,4 +1,3 @@
-
 use actix::prelude::*;
 use std::sync::{Arc, Mutex};
 
@@ -12,7 +11,9 @@ pub struct AppState {
 
 impl AppState {
     pub fn new(prometheus_data: PrometheusData) -> Self {
-        AppState { prometheus: Arc::new(Mutex::new(prometheus_data)) }
+        AppState { 
+            prometheus: Arc::new(Mutex::new(prometheus_data)),
+        }
     }
 
     pub fn render_prometheus(&self) -> String {
