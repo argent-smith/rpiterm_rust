@@ -1,6 +1,7 @@
 use std::time::Duration;
 use actix::prelude::*;
 
+use super::thermometers;
 use super::app_state::{AppState, UpdateTemperatureGauge};
 
 pub type Temperature = f64;
@@ -11,8 +12,9 @@ pub struct Thermometry {
 
 impl Thermometry {
     fn update_curr_temperature(&mut self, _ctx: &mut Context<Self>) {
+        let temperature = thermometers::random();
         let pipeline = self.app_state_addr
-            .send(UpdateTemperatureGauge(36.6))
+            .send(UpdateTemperatureGauge(temperature))
             .map_err(|_| ());
         Arbiter::spawn(pipeline);
     }

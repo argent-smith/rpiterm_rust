@@ -2,6 +2,9 @@ use log::{trace, error};
 use std::fs::File;
 use std::io::BufReader;
 use std::io::prelude::*;
+use rand::prelude::*;
+
+use super::thermometry::Temperature;
 
 pub fn read(path: &str) -> Result<f64, std::io::Error> {
     trace!("reading thermometer at {}", path);
@@ -21,4 +24,10 @@ pub fn read(path: &str) -> Result<f64, std::io::Error> {
     let temperature = reading / 1000.0;
 
     Ok(temperature)
+}
+
+pub fn random() -> Temperature {
+    let mut rng = rand::thread_rng();
+    let n: f64 = rng.gen();
+    n * 100.0
 }
