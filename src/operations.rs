@@ -9,6 +9,7 @@ use actix_web::{
     HttpResponse
 };
 use std::io::Result;
+use log::info;
 
 mod thermometry;
 mod thermometers;
@@ -23,7 +24,10 @@ pub fn start(_cli_args: clap::ArgMatches) -> Result<()> {
     let prometheus_data = PrometheusData::new();
     let app_state = AppState::new(prometheus_data);
     
+    info!("starting the app state actor"); 
     let state_addr = app_state.clone().start();
+
+    info!("starting the http server"); 
     let app_data = web::Data::new(app_state);
     HttpServer::new(
         move || {
@@ -37,6 +41,7 @@ pub fn start(_cli_args: clap::ArgMatches) -> Result<()> {
     
     thermometry::start(state_addr);
 
+    info!("starting the actix system"); 
     sys.run()
 }
 

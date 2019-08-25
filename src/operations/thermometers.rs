@@ -1,33 +1,27 @@
-use log::{trace, error};
-use std::fs::File;
-use std::io::BufReader;
 use std::io::prelude::*;
+use std::io::Error;
 use rand::prelude::*;
+use actix_files::NamedFile;
+use log::{trace};
 
 use super::thermometry::Temperature;
 
-pub fn read(path: &str) -> Result<f64, std::io::Error> {
-    trace!("reading thermometer at {}", path);
-
-    let file = File::open(path).or_else(|err| {
-        error!("failed open at {}: {:?}", path, err);
-        Err(err)
-    })?;
-
-    let mut buf_reader = BufReader::new(file);
+pub fn from_file(path: &str) -> Result<Temperature, Error> {
+    let mut file = NamedFile::open(path)?;
     let mut contents = String::new();
-    buf_reader.read_to_string(&mut contents)?;
+    file.read_to_string(&mut contents)?;
     let reading = contents.trim_end()
         .parse()
-        .unwrap_or(0.0);
-    
+        .unwrap_or(0.0);    
     let temperature = reading / 1000.0;
-
+    trace!("read temperature as {}", temperature);
     Ok(temperature)
 }
 
-pub fn random() -> Temperature {
+pub fn random() -> Result<Temperature, Error> {
     let mut rng = rand::thread_rng();
     let n: f64 = rng.gen();
-    n * 100.0
+    let temperature = n * 100.0;
+    trace!("read temperature as {}", temperature);
+    Ok(temperature)
 }

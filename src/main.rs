@@ -1,9 +1,11 @@
 use clap::{crate_authors, crate_name, crate_version, Arg};
 use std::env;
+use log::error;
+use std::io::Result;
 
 mod operations;
 
-fn main() -> std::io::Result<()> {
+fn main() -> Result<()> {
     let cli_args = clap::App::new(crate_name!())
         .version(crate_version!())
         .author(crate_authors!("\n"))
@@ -32,15 +34,18 @@ fn main() -> std::io::Result<()> {
     if cli_args.is_present("verbose") {
         env::set_var(
             "RUST_LOG",
-            format!("rpiterm-rust=trace,{}=trace", crate_name!())    
+            format!("{}=trace", crate_name!())    
         );
     } else {
         env::set_var(
             "RUST_LOG",
-            format!("rpiterm-rust=info,{}=info", crate_name!())    
+            format!("{}=info", crate_name!())    
         );
     }
 
     env_logger::init();
-    operations::start(cli_args)
+    operations::start(cli_args).or_else(|e| {
+        error!("operations errored: {}", e);
+        Err(e)
+    })
 }
